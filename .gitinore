@@ -1,0 +1,32 @@
+# Ortam dosyaları (şifreler, config bilgileri)
+.env
+
+# SQLite veritabanı dosyaları
+src/storage/*.sqlite
+src/storage/*.db
+
+# PDF’ler
+src/storage/tickets_pdf/
+src/storage/*.pdf
+
+# Log veya cache dosyaları
+src/storage/logs/
+src/storage/cache/
+
+# Composer bağımlılıkları
+/vendor/
+
+# VSCode gibi IDE dosyaları
+.idea/
+.vscode/
+
+
+#Sistem dosyaları Windows 
+.DS_Store
+Thumbs.db
+desktop.ini
+
+#Docker dosyaları (volume'lar hariç)
+docker/*.log
+docker/tmp/
+
