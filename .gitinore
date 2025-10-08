@@ -29,4 +29,5 @@ desktop.ini
 #Docker dosyaları (volume'lar hariç)
 docker/*.log
 docker/tmp/
-
+docker/db_data/
+docker/logs/

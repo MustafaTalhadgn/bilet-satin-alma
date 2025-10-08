@@ -1,0 +1,83 @@
+# 🚌 TicketBuy – Otobüs Bileti Satış Platformu
+
+## 🎯 Görevin Amacı
+
+Bu projenin amacı, **modern web teknolojilerini** kullanarak dinamik, veritabanı destekli ve çok kullanıcılı bir **otobüs bileti satış platformu** geliştirmektir.  
+Bu görev ile:
+
+- PHP dilinde geliştirme yetkinliği kazanmak,  
+- SQLite veritabanı mimarisi kurmayı ve yönetmeyi öğrenmek,  
+- Kullanıcı rolleri ve yetkilendirme sistemlerini oluşturmak,  
+- Temel web güvenlik prensiplerini uygulamak hedeflenmiştir.
+
+---
+
+## ⚙️ Teknoloji ve Araçlar
+
+| Bileşen | Teknoloji / Araç |
+|----------|------------------|
+| **Programlama Dili** | PHP |
+| **Veritabanı** | SQLite |
+| **Arayüz** | HTML, CSS, Bootstrap |
+| **Sürüm Kontrolü** | Git & GitHub |
+| **Kapsülleme** | Docker |
+
+---
+
+## 👥 Kullanıcı Rolleri ve Yetkileri
+
+Platform 3 ana kullanıcı rolünü destekler:
+
+### 🔸 Ziyaretçi (Giriş Yapmamış Kullanıcı)
+- Ana sayfada kalkış/varış noktası seçerek seferleri listeleyebilir.  
+- Sefer detaylarını görüntüleyebilir.  
+- Bilet almak istediğinde giriş sayfasına yönlendirilir.
+
+### 🔸 User (Yolcu)
+- Sisteme kayıt olabilir ve giriş yapabilir.  
+- Seferleri görüntüleyip bilet satın alabilir veya iptal edebilir.  
+- Bilet alımı, sanal kredi üzerinden yapılır.  
+- Satın aldığı biletleri PDF olarak indirebilir.  
+- Kalkış saatine 1 saatten az kalmış biletler iptal edilemez.
+
+### 🔸 Firma Admin (Firma Yetkilisi)
+- Sadece kendi firmasına ait seferleri yönetebilir.  
+- CRUD işlemleriyle sefer ekleme, silme, düzenleme işlemleri yapabilir.
+
+### 🔸 Admin
+- Tüm sisteme erişim yetkisine sahiptir.  
+- Yeni otobüs firmaları oluşturabilir, Firma Admin kullanıcılarını atayabilir.  
+- İndirim kuponları ekleyebilir, düzenleyebilir veya silebilir.
+
+---
+
+## 🧱 Sayfa ve Yetki Mimarisi
+
+> **Not:** Bu bölüme mimari diyagram eklenebilir.  
+> Örnek kullanım:
+> ```markdown
+> ![Sayfa ve Yetki Mimarisi](docs/system-architecture.png)
+> ```
+
+---
+
+## 🐳 Docker Komutları
+
+```bash
+# Build işlemi
+docker build -t ticketbuy .
+
+# Container başlatma
+docker run -d -p 8080:80 --name ticketbuy ticketbuy
+
+# veya compose ile
+docker-compose up --build
+
+🧭 Git Komutları
+İşlem	Komut
+Dosyaları ekleme	git add .
+Commit oluşturma	git commit -m "mesaj"
+Branch listeleme	git branch
+Branch oluşturma	git branch dev/login
+Branch değiştirme	git checkout dev/login
+Push etme	git push origin dev/login
