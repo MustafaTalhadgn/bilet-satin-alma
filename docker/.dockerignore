@@ -1,0 +1,16 @@
+# SQLite veritabanı (lokalde kalsın)
+src/storage/app.db
+
+# Ortam değişkenleri
+.env
+
+# IDE / Editor dosyaları
+.vscode/
+.idea/
+
+# Sistem dosyaları
+.DS_Store
+Thumbs.db
+
+# Loglar
+*.log
