@@ -1,0 +1,17 @@
+.backgroun-image
+{
+    background-image: url('../images/bus.jpg');
+    background-size: cover;
+    background-position-y: bottom;
+    background-repeat: no-repeat;
+    height: 50vh;
+ 
+}
+.cover {
+    background-color: rgba(0, 0, 0, 0.6); /* Siyah yarı saydam kaplama */
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
