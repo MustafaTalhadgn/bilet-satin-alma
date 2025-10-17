@@ -1,0 +1,51 @@
+html,body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: Arial, sans-serif;
+}
+
+.main{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 80%;
+    flex-direction: column; /* yanyana değil, üst üste dizilsin */
+}
+
+
+.form-container{
+padding: 10px;
+width: 50vh;
+height: 65vh;
+-webkit-box-shadow: 5px 5px 15px -7px #000000; 
+box-shadow: 5px 5px 15px -7px #000000;
+border-radius: 10px;
+position: absolute; /* üst üste gelsinler */
+}
+
+.login-top{
+    cursor: pointer;
+}
+.register-top{
+    cursor: pointer;
+}
+.active{
+       border-bottom: 4px solid black;
+}
+
+.showlogin,
+.showregister {
+  transition: opacity 0.3s ease;
+  position: absolute; /* üst üste durmaları için */
+    width: 100%;
+    
+}
+.passive {
+  opacity: 0;
+  pointer-events: none;
+}
+
+
