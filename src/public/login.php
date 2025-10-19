@@ -1,7 +1,12 @@
 <?php
 ini_set('session.cookie_httponly', 1);
 session_start();
+if (isset($_SESSION['user_id'])) {
+    header('Location: index.php');
+    exit();
+}
 require_once __DIR__ . '/../app/config.php'; 
+
 
 // Burası kalkacak
 $login_error = '';
@@ -114,65 +119,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
 
-   <header class="header ">
-    
-<nav class="navbar navbar-expand-md bg-info-subtle">
-  <div class="container">
-    <a class="navbar-brand header-image" href="/">
-      <img src="./assets/images/logo.png" alt="">
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <div class="container-fluid">
-        <div class="row align-items-center w-100">
-
-          <!-- Sol Menü -->
-          <ul class="navbar-nav mb-2 mb-lg-0 col-sm-4 d-flex justify-content-start">
-            <li class="nav-item me-4">
-              <a class="nav-link active" aria-current="page" href="/">Anasayfa</a>
-            </li>
-            <li class="nav-item me-4">
-              <a class="nav-link" href="#">Otobüs Bileti</a>
-            </li>
-            <li class="nav-item dropdown me-4">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                aria-expanded="false">
-                İletişim
-              </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Bize ulaşın</a></li>
-                <li><a class="dropdown-item" href="#">Konum</a></li>
-                <li><hr class="dropdown-divider"></li>
-              </ul>
-            </li>
-          </ul>
-
-          <!-- Arama Formu -->
-          <form class="d-flex col-sm-4 justify-content-center" role="search">
-            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-            <button class="btn btn-secondary" type="submit">Search</button>
-          </form>
-
-          <!-- Sağ Menü -->
-          <ul class="navbar-nav mb-2 mb-lg-0 col-sm-4 d-flex justify-content-end">
-            <li class="nav-item me-4">
-              <a class="nav-link active" aria-current="page" href="/login.php">Giriş Yap</a>
-            </li>
-            
-          </ul>
-
-        </div>
-      </div>
-    </div>
-  </div>
-</nav>
-    
-   </header>
-
+<?php
+require_once './assets/partials/header.php';
+?>
 <main class="main bg-light">
     <div class="form-container">
       <div class="top row text-center">

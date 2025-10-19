@@ -1,3 +1,28 @@
+<?php
+session_start();
+require_once __DIR__ . '/../app/config.php'; 
+
+$departure_cities = [];
+$destination_cities = [];
+
+try {
+  
+    $stmt_dep = $pdo->query("SELECT DISTINCT departure_city FROM Trips ORDER BY departure_city ASC");
+    $departure_cities = $stmt_dep->fetchAll(PDO::FETCH_COLUMN);
+
+    
+    $stmt_dest = $pdo->query("SELECT DISTINCT destination_city FROM Trips ORDER BY destination_city ASC");
+    $destination_cities = $stmt_dest->fetchAll(PDO::FETCH_COLUMN);
+
+} catch (PDOException $e) {
+    
+    error_log("Şehirler çekilemedi: " . $e->getMessage());
+  
+}
+// Tarih input'u için bugünün tarihini alalım (YYYY-MM-DD formatında)
+$today = date('Y-m-d');
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,84 +35,75 @@
     <link rel="stylesheet" href="./assets/css/index.css">
   </head>
 <body>
-      <!-- header -->
-   <header class="header ">
-<nav class="navbar navbar-expand-md bg-info-subtle">
-  <div class="container">
-    <a class="navbar-brand header-image" href="/">
-      <img src="./assets/images/logo.png" alt="">
-    </a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+ <?php
+   require_once 'assets/partials/header.php';
+  ?>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <div class="container-fluid">
-        <div class="row align-items-center w-100">
 
-          <!-- Sol Menü -->
-          <ul class="navbar-nav mb-2 mb-lg-0 col-sm-4 d-flex justify-content-start">
-            <li class="nav-item me-4">
-              <a class="nav-link active" aria-current="page" href="/">Anasayfa</a>
-            </li>
-            <li class="nav-item me-4">
-              <a class="nav-link" href="#">Otobüs Bileti</a>
-            </li>
-            <li class="nav-item dropdown me-4">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                aria-expanded="false">
-                İletişim
-              </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Bize ulaşın</a></li>
-                <li><a class="dropdown-item" href="#">Konum</a></li>
-                <li><hr class="dropdown-divider"></li>
-              </ul>
-            </li>
-          </ul>
-
-          <!-- Arama Formu -->
-          <form class="d-flex col-sm-4 justify-content-center" role="search">
-            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-            <button class="btn btn-secondary" type="submit">Search</button>
-          </form>
-
-          <!-- Sağ Menü -->
-          <ul class="navbar-nav mb-2 mb-lg-0 col-sm-4 d-flex justify-content-end">
-            <li class="nav-item me-4">
-              <a class="nav-link active" aria-current="page" href="/login.php">Giriş Yap</a>
-            </li>
-            <li class="nav-item me-4">
-              <a class="nav-link active" aria-current="page" href="/register.php">Kayıt Ol</a>
-            </li>
-          </ul>
-
-        </div>
-      </div>
-    </div>
-  </div>
-</nav>
-    
-   </header>
-
-   <section class="search-trips backgroun-image">
+ <section class="search-trips backgroun-image">
     <div class="cover">
-      <div class="container ">
-        
+        <div class="container">
+            <section class="hero-section">
+                <div class="container">
+                    <form action="trips.php" method="GET" class="search-card shadow">
+                        <div class="search-card-header text-black">
+                            <i class="bi bi-bus-front"></i> Otobüs Bileti
+                        </div>
+                        <div class="search-card-body row gx-0 align-items-center">
+                            
+                            <div class="col-lg-3 col-md-6 form-field">
+                                <i class="bi bi-geo-alt-fill"></i>
+                                <select name="from" class="form-select" style="padding-left: 3rem;" required>
+                                    <option value="" selected disabled>Nereden Seçin...</option>
+                                    <?php foreach ($departure_cities as $city): ?>
+                                        <option value="<?php echo htmlspecialchars($city); ?>">
+                                            <?php echo htmlspecialchars($city); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
 
+                            <div class="col-lg-3 col-md-6 form-field">
+                                <i class="bi bi-geo-alt"></i>
+                                <select name="to" class="form-select" style="padding-left: 3rem;" required>
+                                    <option value="" selected disabled>Nereye Seçin...</option>
+                                    <?php foreach ($destination_cities as $city): ?>
+                                        <option value="<?php echo htmlspecialchars($city); ?>">
+                                            <?php echo htmlspecialchars($city); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            
+                            <div class="col-lg-3 col-md-6 form-field">
+                                <i class="bi bi-calendar-event"></i>
+                                <input type="date" name="date" id="departure-date" class="form-control" value="<?php echo $today; ?>" min="<?php echo $today; ?>" required>
+                            </div>
 
+                            <div class="col-lg-3 col-md-6 d-flex align-items-center p-3">
+                                <div class="form-check me-3">
+                                    <input class="form-check-input" type="radio" name="date_shortcut" id="radio-today" checked>
+                                    <label class="form-check-label" for="radio-today">Bugün</label>
+                                </div>
+                                <div class="form-check me-4">
+                                    <input class="form-check-input" type="radio" name="date_shortcut" id="radio-tomorrow">
+                                    <label class="form-check-label" for="radio-tomorrow">Yarın</label>
+                                </div>
+                                <button type="submit" class="btn btn-success flex-grow-1">Bileti Bul <i class="bi bi-chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </form>
+
+                    </div>
+            </section>
+        <section class="popular-journeys py-5">
+            <div class="container">
+                </div>
+        </section>
       </div>
 </div>
    </section>
-   <section class="popular-trips">
-      <div class="container ">
-      </div>
-   </section>
-
-
-
 
 
 
@@ -104,5 +120,11 @@
         </div>
         </div>
     </footer>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/city.js"></script>
 </body>
 </html>
+
