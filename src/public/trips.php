@@ -116,7 +116,7 @@ if (!empty($from) && !empty($to) && !empty($date)) {
                             <div class="row">
                                 <div class="col-md-10">
                  <div class="bus-layout-container row">
-                    <!-- <div class="bus-front col-md-1 "><i class="bi bi-fan"></i> Şoför</div> -->
+                   
                      <div class="bus-front col-md-1"><img class="bus-front-image" src="assets/images/front-bus.png" alt=""></div>
                     <div class="bus-grid col-md-11">
                         <?php for ($i = 1; $i <= $trip['capacity']; $i++): ?>
@@ -140,8 +140,8 @@ if (!empty($from) && !empty($to) && !empty($date)) {
                                         <p>Seçilen Koltuk: <strong class="selected-seat-number"></strong></p>
                                         <p>Toplam Tutar: <strong class="total-price"><?php echo htmlspecialchars($trip['price']); ?> TL</strong></p>
                                          <?php
-                                            // Ödeme butonu için rol bazlı mantık
-                                            $form_action = 'login.php'; // Ziyaretçi için varsayılan
+                                        
+                                            $form_action = 'login.php'; 
                                             $button_text = 'Ödemeye Geç';
                                             $button_class = 'btn-success';
                                             $button_attributes = '';

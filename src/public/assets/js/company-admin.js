@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Sayfadaki tüm "Düzenle" butonlarını seç
     const editButtons = document.querySelectorAll('.edit-trip-btn');
 
-    // Her bir butona tıklama olayı ekle
+    // Her bir butona tıklama olayı d
     editButtons.forEach(button => {
         button.addEventListener('click', function () {
             // Butonun data-* özelliklerinden verileri al
