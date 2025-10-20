@@ -20,7 +20,7 @@ if (session_status() === PHP_SESSION_NONE) {
                         <a class="nav-link active" aria-current="page" href="index.php">Anasayfa</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="trips.php">Otobüs Bileti</a>
+                        <a class="nav-link" href="/my-tickets.php">Biletlerim</a>
                     </li>
                     </ul>
 
@@ -35,7 +35,7 @@ if (session_status() === PHP_SESSION_NONE) {
                                     <li><a class="dropdown-item" href="account.php">Hesabım</a></li>
                                     
                                     <?php if ($_SESSION['user_role'] === 'user'): ?>
-                                        <li><a class="dropdown-item" href="my-tickets.php">Biletlerim</a></li>
+                                        <li><a class="dropdown-item" href="/my-tickets.php">Biletlerim</a></li>
                                     <?php endif; ?>
 
                                     <?php if ($_SESSION['user_role'] === 'company'): ?>
