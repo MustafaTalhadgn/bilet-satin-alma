@@ -1,0 +1,144 @@
+.company-logo {
+    height: 150px;
+
+}
+/* Ana Otobüs Konteyneri */
+.bus-layout-container {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+    margin: auto;
+}
+
+/* Şoför Alanı */
+.bus-front {
+    font-size: 0.9em;
+    color: #6c757d;
+    text-align: left;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.bus-front-image {
+    width: 50px;
+    height: 100%;
+}
+
+/* Koltukların Yerleşeceği Izgara (Grid) Alanı */
+.bus-grid {
+    display: grid;
+    /* 15 sütunlu bir ızgara oluşturuyoruz */
+    grid-template-columns: repeat(15, 1fr);
+    /* 5 satırlı bir ızgara */
+    grid-template-rows: repeat(1, 1fr);
+    grid-template-rows: repeat(1, 1fr) 80px repeat(1,1fr);
+    gap: 8px 5px; /* Dikey ve yatay boşluklar */
+}
+
+/* Koltukların Genel Stili */
+.seat {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 35px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 0.9em;
+    color: #333;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Koltuk Durumları (Boş, Dolu, Seçili) */
+.seat.available {
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+.seat.available:hover {
+    background-color: #e9ecef;
+}
+.seat.occupied {
+    background-color: #8ab4f8; /* Mavi */
+    color: white;
+    cursor: not-allowed;
+    border: 1px solid #5a8de0;
+}
+.seat.selected {
+    background-color: #34a853; /* Yeşil */
+    color: white;
+    border: 1px solid #1a73e8;
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.7);
+}
+
+
+
+.seat[data-seat-number="1"] { grid-area:  5 / 1; }
+.seat[data-seat-number="2"] { grid-area:  5 / 2; }
+.seat[data-seat-number="3"] { grid-area:  5 / 3; }
+.seat[data-seat-number="4"] { grid-area:  5 / 4; }
+.seat[data-seat-number="5"] { grid-area:  5 / 5; }
+.seat[data-seat-number="6"] { grid-area:  5 / 6; }
+.seat[data-seat-number="7"] { grid-area:  5 / 7; }
+.seat[data-seat-number="8"] { grid-area:  5 / 8; }
+.seat[data-seat-number="9"] { grid-area:  5 / 9; }
+.seat[data-seat-number="10"] { grid-area:  5 / 10; }
+.seat[data-seat-number="11"] { grid-area:  5 / 11; }
+.seat[data-seat-number="12"] { grid-area:  5 / 12; }
+.seat[data-seat-number="13"] { grid-area:  5 / 13; }
+.seat[data-seat-number="14"] { grid-area:  5 / 14; }
+.seat[data-seat-number="15"] { grid-area:  5 / 15; }    
+
+.seat[data-seat-number="16"] { grid-area:  4 / 1; }
+.seat[data-seat-number="17"] { grid-area:  4 / 2; }
+.seat[data-seat-number="18"] { grid-area:  4 / 3; }
+.seat[data-seat-number="19"] { grid-area:  4 / 4; }
+.seat[data-seat-number="20"] { grid-area:  4 / 5; }
+.seat[data-seat-number="21"] { grid-area:  4 / 6;   }
+.seat[data-seat-number="22"] { grid-area:  4 / 7; }
+.seat[data-seat-number="23"] { grid-area:  4 / 8; }         
+.seat[data-seat-number="24"] { grid-area:  4 / 9; } 
+.seat[data-seat-number="25"] { grid-area:  4 / 10; }
+.seat[data-seat-number="26"] { grid-area:  4 / 11; }
+.seat[data-seat-number="27"] { grid-area:  4 / 12; }
+.seat[data-seat-number="28"] { grid-area:  4 / 13; }
+.seat[data-seat-number="29"] { grid-area:  4 / 14; }
+.seat[data-seat-number="30"] { grid-area:  4 / 15; }    
+
+
+
+.seat[data-seat-number="31"] { grid-area:  2 / 1; }
+.seat[data-seat-number="32"] { grid-area:  2 / 2; }
+.seat[data-seat-number="33"] { grid-area:  2 / 3; }
+.seat[data-seat-number="34"] { grid-area:  2 / 4; }
+.seat[data-seat-number=" " ]  { grid-area:  2 / 5;}
+.seat[data-seat-number="35"] { grid-area:  2 / 6; }
+.seat[data-seat-number="36"] { grid-area:  2 / 7; }
+.seat[data-seat-number="37"] { grid-area:  2 / 8; }
+.seat[data-seat-number="38"] { grid-area:  2 / 9; }
+.seat[data-seat-number="39"] { grid-area:  2 / 10;}
+.seat[data-seat-number="40"] { grid-area:  2 / 11;}
+.seat[data-seat-number=" "] { grid-area:   2 / 12;}
+.seat[data-seat-number="41"] { grid-area:  2 / 13;}
+.seat[data-seat-number="42"] { grid-area:  2 / 14;}
+
+
+
+
+
+
+
+/* Koltuk Bilgi Legend Alanı */
+.seat-legend {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+.seat-legend.available { background-color: #ffffff; border: 1px solid #ccc; }
+.seat-legend.occupied { background-color: #8ab4f8; }
+.seat-legend.selected { background-color: #34a853; }

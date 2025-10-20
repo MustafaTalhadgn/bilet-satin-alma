@@ -153,7 +153,7 @@ require_once './assets/partials/header.php';
             <input type="password" name="login-password" class="form-control" id="passwordInput" placeholder="Şifrenizi giriniz" required/>
             <i class="bi bi-eye-slash toggle-password" style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); cursor: pointer;"></i>
           </div>
-          <div class="mb-3 form-check text-center p-4">
+          <div class="mb-3 form-check text-center px-4">
             <a href="#">Şifremi unuttum</a>
           </div>
           <div class="btn-submit d-flex justify-content-center p-4">
@@ -193,18 +193,9 @@ require_once './assets/partials/header.php';
     </div>
 </main>
   
-    <footer class="bg-info-subtle fixed-bottom">
-        <div class="container ">
-        <div class="contact col">
-            <ul class="footer-contact ">
-            <p><strong>E-posta:</strong> destek@ticketbuy.com</p>
-        </ul>
-        <div class="footer-message text-center col ">    
-        <p>© 2025 TicketBuy. Tüm hakları saklıdır.</p>
-        </div>
-        </div>
-    </footer>
-    
+<?php
+require_once './assets/partials/footer.php';
+?>
     <script src="./assets/js/login.js"></script>
     <script src="./assets/js/register.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
