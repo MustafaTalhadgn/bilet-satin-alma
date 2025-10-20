@@ -31,12 +31,24 @@ if (session_status() === PHP_SESSION_NONE) {
                                 <i class="bi bi-person-fill me-2"></i>
                                 <?php echo htmlspecialchars($_SESSION['user_fullname']); ?>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="account.php">Hesabım</a></li>
-                                <li><a class="dropdown-item" href="my-tickets.php">Biletlerim</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="assets/partials/logout.php">Çıkış Yap</a></li>
-                            </ul>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" href="account.php">Hesabım</a></li>
+                                    
+                                    <?php if ($_SESSION['user_role'] === 'user'): ?>
+                                        <li><a class="dropdown-item" href="my-tickets.php">Biletlerim</a></li>
+                                    <?php endif; ?>
+
+                                    <?php if ($_SESSION['user_role'] === 'company'): ?>
+                                        <li><a class="dropdown-item" href="/companyAdmin.php">Firma Panelim</a></li>
+                                    <?php endif; ?>
+
+                                    <?php if ($_SESSION['user_role'] === 'admin'): ?>
+                                        <li><a class="dropdown-item" href="adminPanel.php">Admin Paneli</a></li>
+                                    <?php endif; ?>
+
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="assets/partials/logout.php">Çıkış Yap</a></li>
+                                </ul>
                         </li>
                     <?php else: ?>
                         <li class="nav-item">
