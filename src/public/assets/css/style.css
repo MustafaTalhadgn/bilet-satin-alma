@@ -1,0 +1,18 @@
+/* Butonlara ve Linklere Pürüzsüz Geçiş */
+.btn, .nav-link, .dropdown-item {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Header'daki linklerin üzerine gelince hafifçe büyümesi */
+.navbar-nav .nav-link:hover {
+    transform: scale(1.05);
+}
+
+/* Ana "Bileti Bul" butonuna gölge ve hover efekti */
+.btn-success {
+    box-shadow: 0 4px 6px rgba(40, 167, 69, 0.2);
+}
+.btn-success:hover {
+    box-shadow: 0 6px 8px rgba(40, 167, 69, 0.3);
+    transform: translateY(-2px);
+}

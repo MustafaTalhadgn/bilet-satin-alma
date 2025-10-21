@@ -26,7 +26,7 @@ $ticket_id = $_GET['ticket_id'] ?? null;
                     <h2 class="mt-3">Biletiniz Başarıyla Oluşturuldu!</h2>
                     <p class="lead">Ödemeniz başarıyla tamamlandı. Bilet bilgilerinizi aşağıdan indirebilir veya "Biletlerim" sayfasından görüntüleyebilirsiniz.</p>
                     <div class="d-grid gap-2 mt-4">
-                        <a href="generate_pdf.php?ticket_id=<?php echo htmlspecialchars($ticket_id); ?>" class="btn btn-primary"><i class="bi bi-file-earmark-pdf"></i> Bileti PDF Olarak İndir</a>
+                        <a href="/printable_ticket.php?ticket_id=<?php echo htmlspecialchars($ticket_id); ?>" class="btn btn-primary"><i class="bi bi-file-earmark-pdf"></i> Bileti PDF Olarak İndir</a>
                         <a href="../../my-tickets.php" class="btn btn-secondary">Biletlerim Sayfasına Git</a>
                     </div>
                 </div>

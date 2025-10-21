@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: . # Build context projenin ana dizini
+      dockerfile: docker/Dockerfile # Dockerfile'ın yolu doğru
+    container_name: ticketbuy_web
+    ports:
+      - "8080:80" # Host portu 8080, container portu 80
+    volumes:
+      # Tüm src klasörünü container'daki /var/www/html'ye bağla
+      # Bu sayede kod değişiklikleri anında yansır ve storage kalıcı olur
+      - ./src:/var/www/html
+    restart: always

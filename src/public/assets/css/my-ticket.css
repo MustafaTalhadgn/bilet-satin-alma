@@ -1,0 +1,23 @@
+/* Aktif Bilet Kartı */
+.ticket-card.status-active {
+    border-left: 5px solid #0d6efd; /* Mavi kenar */
+}
+
+/* Tamamlanmış Bilet Kartı */
+.ticket-card.status-expired {
+    border-left: 5px solid #6c757d; /* Gri kenar */
+    background-color: #f8f9fa;
+}
+.ticket-card.status-expired .card-body {
+    opacity: 0.7;
+}
+
+
+/* İptal Edilmiş Bilet Kartı */
+.ticket-card.status-canceled {
+    border-left: 5px solid #dc3545; /* Kırmızı kenar */
+    background-color: #f8f9fa;
+}
+.ticket-card.status-canceled .card-body {
+    opacity: 0.6;
+}
