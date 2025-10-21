@@ -13,8 +13,6 @@ $search_error = '';
 // Gelen veriler boş değilse arama yap
 if (!empty($from) && !empty($to) && !empty($date)) {
     try {
-        // SQL Injection'a karşı hazırlıklı ifadeler kullanıyoruz
-        // DÜZELTME: Firma adı için "bc.name as bus_name" takma adı eklendi
         $sql = "SELECT
                     t.*,
                     bc.name as bus_name,
@@ -23,15 +21,22 @@ if (!empty($from) && !empty($to) && !empty($date)) {
                 JOIN Bus_Company bc ON t.company_id = bc.id
                 WHERE t.departure_city = :from
                 AND t.destination_city = :to
-                AND DATE(t.departure_time) = :date
-                ORDER BY t.departure_time ASC";
+                AND DATE(t.departure_time) = :date";
+
+        // --- YENİ EKLENEN KONTROL ---
+        // Eğer arama yapılan tarih bugün ise, sadece kalkış saati geçmemiş olan seferleri göster.
+        if ($date === date('Y-m-d')) {
+            $sql .= " AND t.departure_time > datetime('now', 'localtime')";
+        }
+        // --- KONTROL BİTTİ ---
+
+        $sql .= " ORDER BY t.departure_time ASC";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':from' => $from, ':to' => $to, ':date' => $date]);
         $trips = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     } catch (PDOException $e) {
-        // Hata durumunda logla ve kullanıcıya genel bir mesaj göster
         error_log("Sefer arama hatası: " . $e->getMessage());
         $search_error = "Seferler getirilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.";
     }
@@ -54,11 +59,13 @@ if (!empty($from) && !empty($to) && !empty($date)) {
 
 <?php require_once 'assets/partials/header.php'; ?>
 
+
+
 <main class="container my-5">
     <h2 class="mb-4">
         Sefer Sonuçları: <strong><?php echo htmlspecialchars($from); ?> &rarr; <?php echo htmlspecialchars($to); ?></strong>
-        <?php include './assets/data/translateDate.php'; ?>
-        <span class="text-muted fs-5">(<?php echo translateDate($date); ?>)</span>
+        <?php require_once 'assets/data/translateDate.php'; ?>
+        <span class="text-muted fs-5"><?php echo translateDate($date); ?></span>
     </h2>
 
     <?php if ($search_error): ?>
@@ -110,37 +117,34 @@ if (!empty($from) && !empty($to) && !empty($date)) {
                             </div>
                         </div>
                     </div>
-
                     <div class="tab-pane fade" id="seats-<?php echo $trip['id']; ?>">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-10">
-                 <div class="bus-layout-container row">
-                   
-                     <div class="bus-front col-md-1"><img class="bus-front-image" src="assets/images/front-bus.png" alt=""></div>
-                    <div class="bus-grid col-md-11">
-                        <?php for ($i = 1; $i <= $trip['capacity']; $i++): ?>
-                            <?php
-                                $is_booked = in_array($i, $booked_seats);
-                                $seat_class = $is_booked ? 'occupied' : 'available';
-                            ?>
-                            <div class="seat <?php echo $seat_class; ?>" data-seat-number="<?php echo $i; ?>"><?php echo $i; ?></div>
-                        <?php endfor; ?>
-                    </div>
-                </div>
-                <div class="d-flex justify-content-center gap-4 mt-3">
-                    <div><span class="seat-legend available"></span> Boş</div>
-                    <div><span class="seat-legend occupied"></span> Dolu</div>
-                    <div><span class="seat-legend selected"></span> Seçilen</div>
-                </div>
-            </div>
+                                   <div class="bus-layout-container row">
+                                        <div class="bus-front col-md-1"><img class="bus-front-image" src="assets/images/front-bus.png" alt=""></div>
+                                        <div class="bus-grid col-md-11">
+                                            <?php for ($i = 1; $i <= $trip['capacity']; $i++): ?>
+                                                <?php
+                                                    $is_booked = in_array($i, $booked_seats);
+                                                    $seat_class = $is_booked ? 'occupied' : 'available';
+                                                ?>
+                                                <div class="seat <?php echo $seat_class; ?>" data-seat-number="<?php echo $i; ?>"><?php echo $i; ?></div>
+                                            <?php endfor; ?>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-center gap-4 mt-3">
+                                        <div><span class="seat-legend available"></span> Boş</div>
+                                        <div><span class="seat-legend occupied"></span> Dolu</div>
+                                        <div><span class="seat-legend selected"></span> Seçilen</div>
+                                    </div>
+                                </div>
                                 <div class="col-md-2 selection-summary-container">
                                     <div class="selection-summary p-3 border rounded" style="display: none;">
                                         <h5>Koltuk Seçimi</h5>
                                         <p>Seçilen Koltuk: <strong class="selected-seat-number"></strong></p>
                                         <p>Toplam Tutar: <strong class="total-price"><?php echo htmlspecialchars($trip['price']); ?> TL</strong></p>
-                                         <?php
-                                        
+                                        <?php
                                             $form_action = 'login.php'; 
                                             $button_text = 'Ödemeye Geç';
                                             $button_class = 'btn-success';
@@ -148,11 +152,9 @@ if (!empty($from) && !empty($to) && !empty($date)) {
 
                                             if (isset($_SESSION['user_id']) && isset($_SESSION['user_role'])) {
                                                 if ($_SESSION['user_role'] === 'user') {
-                                                    // Rolü 'user' ise pay.php'ye yönlendir
                                                     $form_action = 'pay.php';
                                                 } else {
-                                                    // Rolü 'company' veya 'admin' ise butonu devre dışı bırak
-                                                    $form_action = '#'; // Form hiçbir yere gitmesin
+                                                    $form_action = '#';
                                                     $button_text = 'Yönetici Bilet Alamaz';
                                                     $button_class = 'btn-secondary';
                                                     $button_attributes = 'disabled';
@@ -182,3 +184,4 @@ if (!empty($from) && !empty($to) && !empty($date)) {
 
 </body>
 </html>
+

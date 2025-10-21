@@ -21,6 +21,19 @@ try {
 }
 // Tarih input'u için bugünün tarihini alalım (YYYY-MM-DD formatında)
 $today = date('Y-m-d');
+
+try {
+    $popular_routes_stmt = $pdo->query("
+        SELECT departure_city, destination_city, COUNT(*) as trip_count
+        FROM Trips
+        GROUP BY departure_city, destination_city
+        ORDER BY trip_count DESC
+        LIMIT 4
+    ");
+    $popular_routes = $popular_routes_stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $popular_routes = []; // Hata durumunda boş göster
+}
 ?>
 
 <!DOCTYPE html>
@@ -105,22 +118,28 @@ $today = date('Y-m-d');
 </div>
    </section>
 
-
-
-   <!-- footer -->
-    <footer class="bg-info-subtle  fixed-bottom">
-        <div class="container ">
-        <div class="contact col">
-            <ul class="footer-contact ">
-            <p><strong>E-posta:</strong> destek@ticketbuy.com</p>
-            
-        </ul>
-        <div class="footer-message text-center col ">    
-        <p>© 2025 TicketBuy. Tüm hakları saklıdır.</p>
+   <section class="popular-journeys py-5">
+    <div class="container">
+        <h2 class="text-center mb-4 fw-bold">Popüler Rotalar</h2>
+        <div class="row g-4">
+            <?php foreach ($popular_routes as $route): ?>
+                <div class="col-md-3">
+                    <a href="trips.php?from=<?php echo urlencode($route['departure_city']); ?>&to=<?php echo urlencode($route['destination_city']); ?>&date=<?php echo date('Y-m-d'); ?>" class="route-card-link">
+                        <div class="card route-card h-100 shadow-sm">
+                            <div class="card-body text-center">
+                                <h5 class="card-title"><?php echo htmlspecialchars($route['departure_city']); ?> &rarr; <?php echo htmlspecialchars($route['destination_city']); ?></h5>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            <?php endforeach; ?>
         </div>
-        </div>
-    </footer>
+    </div>
+</section>
 
+
+
+ 
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

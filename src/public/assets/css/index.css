@@ -87,3 +87,24 @@
 .bi-bus-front{
     color: black;
 }
+
+.route-card-link {
+    text-decoration: none;
+}
+
+.route-card {
+    transition: all 0.3s ease;
+    border: none;
+    border-radius: 10px;
+}
+
+.route-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+    background-color: #e9ecef;
+}
+
+.route-card .card-title {
+    color: #343a40;
+    font-weight: 500;
+}
