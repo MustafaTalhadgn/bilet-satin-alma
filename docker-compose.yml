@@ -13,3 +13,4 @@ services:
       # Bu sayede kod değişiklikleri anında yansır ve storage kalıcı olur
       - ./src:/var/www/html
     restart: always
+    network_mode: bridge 

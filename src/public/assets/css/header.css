@@ -1,9 +1,19 @@
+.navbar-color{
+    background-color:#bccad6 ;
+}
 .header-image img{
     max-width: 20px;
     max-height: 20px;
     margin: 0;
 }
 
+
 .header-image {
     background-color: transparent;
+}
+/* Üzerine gelince (hover) efekti */
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link:focus {
+    color: #000;
+   
 }
