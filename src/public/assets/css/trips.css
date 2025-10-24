@@ -2,7 +2,7 @@
     height: 150px;
 
 }
-/* Ana Otobüs Konteyneri */
+
 .bus-layout-container {
     background-color: #f8f9fa;
     border: 1px solid #dee2e6;
@@ -13,7 +13,7 @@
     margin: auto;
 }
 
-/* Şoför Alanı */
+
 .bus-front {
     font-size: 0.9em;
     color: #6c757d;
@@ -26,18 +26,16 @@
     height: 100%;
 }
 
-/* Koltukların Yerleşeceği Izgara (Grid) Alanı */
+
 .bus-grid {
     display: grid;
-    /* 15 sütunlu bir ızgara oluşturuyoruz */
     grid-template-columns: repeat(15, 1fr);
-    /* 5 satırlı bir ızgara */
     grid-template-rows: repeat(1, 1fr);
     grid-template-rows: repeat(1, 1fr) 80px repeat(1,1fr);
-    gap: 8px 5px; /* Dikey ve yatay boşluklar */
+    gap: 8px 5px; 
 }
 
-/* Koltukların Genel Stili */
+
 .seat {
     display: flex;
     justify-content: center;
@@ -50,7 +48,7 @@
     transition: all 0.2s ease-in-out;
 }
 
-/* Koltuk Durumları (Boş, Dolu, Seçili) */
+
 .seat.available {
     background-color: #ffffff;
     border: 1px solid #ccc;
@@ -60,13 +58,13 @@
     background-color: #e9ecef;
 }
 .seat.occupied {
-    background-color: #8ab4f8; /* Mavi */
+    background-color: #8ab4f8; 
     color: white;
     cursor: not-allowed;
     border: 1px solid #5a8de0;
 }
 .seat.selected {
-    background-color: #34a853; /* Yeşil */
+    background-color: #34a853; 
     color: white;
     border: 1px solid #1a73e8;
     transform: scale(1.1);
@@ -125,12 +123,6 @@
 .seat[data-seat-number="42"] { grid-area:  2 / 14;}
 
 
-
-
-
-
-
-/* Koltuk Bilgi Legend Alanı */
 .seat-legend {
     display: inline-block;
     width: 20px;
@@ -142,3 +134,27 @@
 .seat-legend.available { background-color: #ffffff; border: 1px solid #ccc; }
 .seat-legend.occupied { background-color: #8ab4f8; }
 .seat-legend.selected { background-color: #34a853; }
+
+
+.nav-tabs .nav-link {
+  color: black;
+  background-color: #f5f5f5;
+  margin-right: 5px;
+  border-top: 2px solid #343a40;
+  border-left: 2px solid #343a40;
+  border-right: 2px solid #343a40;
+
+}
+
+
+.nav-tabs .nav-link.active {
+    color: white;
+    background-color: #343a40;
+    border-color: #424A5E;
+
+}
+
+.select-seat-btn:hover{
+background-color: white;
+color: #343a40;
+}

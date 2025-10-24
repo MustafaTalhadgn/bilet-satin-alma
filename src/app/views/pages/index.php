@@ -1,28 +1,22 @@
-<?php
-/**
- * src/app/views/pages/index.php
- * Anasayfanın HTML yapısı. Gerekli tüm değişkenler ($departure_cities vb.)
- * HomeController tarafından sağlanır.
- */
-?>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anasayfa - Otobüs Bileti</title>
-    <!-- CSS yolları web kökünden (/assets/) başlamalı -->
+   
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="/assets/css/header.css">
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="/assets/css/index.css">
+    <link rel="stylesheet" href="/assets/css/footer.css">
 </head>
 <body>
 
 <?php
-// Partial'ı doğru yerden çağır
 require_once __DIR__ . '/../partials/header.php';
+require_once __DIR__ .'/../../data/translateDate.php';
 ?>
 
 <section class="search-trips background-image">
@@ -30,7 +24,7 @@ require_once __DIR__ . '/../partials/header.php';
         <div class="container">
             <section class="hero-section">
                 <div class="container">
-                    <!-- Formun action'ı artık /trips.php olmalı (kök dizine göre) -->
+                    
                     <form action="/trips.php" method="GET" class="search-card shadow">
                         <div class="search-card-header text-black">
                             <i class="bi bi-bus-front"></i> Otobüs Bileti
@@ -87,7 +81,9 @@ require_once __DIR__ . '/../partials/header.php';
 
 <section class="popular-journeys ">
     <div class="container">
-        <h2 class="text-center fw-bold pop-routes ">Popüler Rotalar</h2>
+        <h2 class="text-center fw-bold pop-routes ">Popüler Rotalar (<?php $todaydate=new DateTime() ;echo translateDate($todaydate->format('Y-m-d'))
+            ?>) 
+        </h2>
         <div class="row g-4">
             <?php if (empty($popular_routes)): ?>
                 <p class="text-center text-muted">Popüler rota bulunamadı.</p>
@@ -113,8 +109,7 @@ require_once __DIR__ . '/../partials/header.php';
 require_once __DIR__ . '/../partials/footer.php';
 ?>
 
-<!-- JS yolları web kökünden (/assets/) başlamalı -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/assets/js/city.js"></script> <!-- Varsa, yolunu kontrol et -->
+<script src="/assets/js/city.js"></script> 
 </body>
 </html>

@@ -1,7 +1,4 @@
 <?php
-// src/app/controllers/TicketController.php
-
-// Gerekli dosyalar (config ve session giriş noktasında çağrılacak)
 
 class TicketController {
     private $pdo;
@@ -10,25 +7,23 @@ class TicketController {
         $this->pdo = $pdo;
     }
 
-    /**
-     * Kullanıcının biletlerini listeler ve iptal işlemlerini yönetir.
-     */
+ 
     public function showMyTickets() {
-        // --- GÜVENLİK GÖREVLİSİ (GUARD) ---
+      
         if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'user') {
-            header("Location: /login.php"); // Kök dizine göre yönlendir
+            header("Location: /login.php"); 
             exit();
         }
 
         $user_id = $_SESSION['user_id'];
 
-        // Flash mesajları ve CSRF token'ı session.php'den alıyoruz (global $csrf_token)
+
         global $csrf_token;
         $flash_message = $_SESSION['flash_message'] ?? null;
         $flash_type = $_SESSION['flash_type'] ?? 'success';
         unset($_SESSION['flash_message'], $_SESSION['flash_type']);
 
-        // --- BİLET İPTAL ETME İŞLEMİ ---
+  
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_ticket'])) {
             if (!isset($_POST['csrf_token']) || !verify_csrf_token($_POST['csrf_token'])) {
                 die("Geçersiz işlem denemesi!");
@@ -39,7 +34,7 @@ class TicketController {
             try {
                 $this->pdo->beginTransaction();
 
-                // İptal edilecek bileti ve sefer bilgilerini çek (IDOR Korumalı)
+
                 $stmt = $this->pdo->prepare("
                     SELECT t.id, t.total_price, tr.departure_time 
                     FROM Tickets t 
@@ -51,16 +46,16 @@ class TicketController {
 
                 if (!$ticket) throw new Exception("Geçersiz veya daha önce iptal edilmiş bilet.");
 
-                // Zaman Kontrolü
+
                 $departure_timestamp = strtotime($ticket['departure_time']);
                 if (($departure_timestamp - time()) <= 3600) {
                     throw new Exception("Sefer saatine 1 saatten az kaldığı için bilet iptal edilemez.");
                 }
 
-                // Bileti güncelle
+
                 $this->pdo->prepare("UPDATE Tickets SET status = 'canceled' WHERE id = ?")->execute([$ticket_id_to_cancel]);
 
-                // Ücreti iade et
+
                 $this->pdo->prepare("UPDATE User SET balance = balance + ? WHERE id = ?")->execute([$ticket['total_price'], $user_id]);
 
                 $this->pdo->commit();
@@ -73,11 +68,11 @@ class TicketController {
                 $_SESSION['flash_type'] = 'danger';
             }
 
-            header("Location: /tickets.php"); // Kök dizine göre yönlendir
+            header("Location: /tickets.php"); 
             exit();
         }
 
-        // --- KULLANICININ TÜM BİLETLERİNİ ÇEKME ---
+       
         try {
              $tickets_stmt = $this->pdo->prepare("
                 SELECT
@@ -96,13 +91,12 @@ class TicketController {
             $all_tickets = $tickets_stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
              error_log("Biletler çekilemedi: " . $e->getMessage());
-             $all_tickets = []; // Hata durumunda boş dizi ata
-             $flash_message = "Biletleriniz yüklenirken bir sorun oluştu."; // Kullanıcıya bilgi ver
+             $all_tickets = []; 
+             $flash_message = "Biletleriniz yüklenirken bir sorun oluştu."; 
              $flash_type = 'danger';
         }
 
 
-        // Biletleri durumlarına göre ayır
         $active_tickets = [];
         $canceled_tickets = [];
         $expired_tickets = [];
@@ -122,23 +116,21 @@ class TicketController {
             }
         }
 
-        // View'a gönderilecek veriler
+
         $data = [
             'active_tickets' => $active_tickets,
             'canceled_tickets' => $canceled_tickets,
             'expired_tickets' => $expired_tickets,
             'flash_message' => $flash_message,
             'flash_type' => $flash_type,
-            'csrf_token' => $csrf_token // session.php'den gelen global token
+            'csrf_token' => $csrf_token 
         ];
 
-        // İlgili view dosyasını yükle
+       
         $this->loadView('tickets', $data);
     }
 
-    /**
-     * Belirtilen view dosyasını yükler ve verileri ona aktarır.
-     */
+
     protected function loadView($viewName, $data = []) {
         extract($data);
         require __DIR__ . '/../views/pages/' . $viewName . '.php';

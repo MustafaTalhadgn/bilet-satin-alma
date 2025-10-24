@@ -1,21 +1,16 @@
 <?php
-// src/app/controllers/CompanyAdminController.php
-
-// Gerekli dosyalar (config ve session giriş noktasında çağrılacak)
 
 class CompanyAdminController {
     private $pdo;
-    private $company_id; // Bu controller'ın yönettiği firma ID'si
+    private $company_id;
 
     public function __construct($pdo) {
         $this->pdo = $pdo;
-        // Controller başlatılırken Guard ve Firma ID'sini alalım
+
         $this->initialize();
     }
 
-    /**
-     * Controller'ı başlatır, güvenlik kontrollerini yapar ve firma ID'sini alır.
-     */
+
     private function initialize() {
         // --- GÜVENLİK GÖREVLİSİ (GUARD) ---
         if (!isset($_SESSION['user_id'])) {
@@ -38,9 +33,7 @@ class CompanyAdminController {
     }
 
 
-    /**
-     * Firma yönetim panelini gösterir ve POST isteklerini işler.
-     */
+
     public function showDashboard() {
         // Flash mesajları ve CSRF token'ı session.php'den al
         global $csrf_token;
@@ -113,9 +106,7 @@ class CompanyAdminController {
         $this->loadView('company/dashboard', $data);
     }
 
-    /**
-     * Yeni sefer ekleme isteğini işler.
-     */
+
     private function handleAddTrip() {
         $departure_city = trim($_POST['departure_city']);
         $destination_city = trim($_POST['destination_city']);
@@ -153,9 +144,7 @@ class CompanyAdminController {
         }
     }
 
-    /**
-     * Sefer düzenleme isteğini işler.
-     */
+
     private function handleEditTrip() {
         $trip_id = $_POST['trip_id'];
         $departure_city = trim($_POST['departure_city']);
@@ -200,9 +189,7 @@ class CompanyAdminController {
         }
     }
 
-    /**
-     * Sefer silme isteğini işler.
-     */
+
     private function handleDeleteTrip() {
         $trip_id_to_delete = $_POST['trip_id'];
         if (empty($trip_id_to_delete)) return;
@@ -233,9 +220,7 @@ class CompanyAdminController {
          }
     }
 
-    /**
-     * Yeni firma kuponu ekleme isteğini işler.
-     */
+
     private function handleAddCoupon() {
         $discount = filter_input(INPUT_POST, 'discount', FILTER_VALIDATE_FLOAT);
         $usage_limit = filter_input(INPUT_POST, 'usage_limit', FILTER_VALIDATE_INT);
@@ -265,9 +250,7 @@ class CompanyAdminController {
         }
     }
 
-    /**
-     * Firma kuponu silme isteğini işler.
-     */
+
     private function handleDeleteCoupon() {
         $coupon_id_to_delete = $_POST['coupon_id'];
         if (empty($coupon_id_to_delete)) return;
@@ -326,10 +309,114 @@ class CompanyAdminController {
         }
     }
     
+ public function showTicketsPage() {
+        global $csrf_token;
+        $flash_message = $_SESSION['flash_message'] ?? null;
+        $flash_type = $_SESSION['flash_type'] ?? 'success';
+        unset($_SESSION['flash_message'], $_SESSION['flash_type']);
 
-    /**
-     * Belirtilen view dosyasını yükler ve verileri ona aktarır.
-     */
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['admin_cancel_ticket'])) {
+            if (!isset($_POST['csrf_token']) || !verify_csrf_token($_POST['csrf_token'])) {
+                die("Geçersiz işlem denemesi!");
+            }
+            
+            $this->handleAdminTicketCancel($_POST['ticket_id']);
+            
+            session_write_close();
+            header("Location: /company-tickets.php");
+            exit();
+        }
+
+
+        try {
+
+            $stmt = $this->pdo->prepare("
+                SELECT
+                    t.id AS ticket_id, t.status, t.total_price,
+                    u.full_name AS user_name, u.email AS user_email,
+                    tr.departure_city, tr.destination_city, tr.departure_time,
+                    bs.seat_number
+                FROM Tickets t
+                JOIN User u ON t.user_id = u.id
+                JOIN Trips tr ON t.trip_id = tr.id
+                JOIN Booked_Seats bs ON bs.ticket_id = t.id
+                WHERE tr.company_id = :company_id
+                ORDER BY tr.departure_time DESC
+            ");
+            $stmt->execute([':company_id' => $this->company_id]);
+            $company_tickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        } catch (PDOException $e) {
+            error_log("Firma biletleri çekilemedi: " . $e->getMessage());
+            $company_tickets = [];
+            $flash_message = "Biletler listelenirken bir hata oluştu.";
+            $flash_type = "danger";
+        }
+
+
+        $data = [
+            'pageTitle' => 'Bilet Yönetimi',
+            'activePage' => 'company_tickets', 
+            'company_tickets' => $company_tickets,
+            'flash_message' => $flash_message,
+            'flash_type' => $flash_type,
+            'csrf_token' => $csrf_token
+        ];
+
+        $this->loadView('company/tickets', $data);
+    }
+
+ 
+    private function handleAdminTicketCancel($ticket_id) {
+        if (empty($ticket_id)) {
+             $_SESSION['flash_message'] = "Geçersiz Bilet ID.";
+             $_SESSION['flash_type'] = 'danger';
+             return;
+        }
+
+        try {
+            $this->pdo->beginTransaction();
+
+
+            $stmt = $this->pdo->prepare("
+                SELECT t.id, t.total_price, t.user_id
+                FROM Tickets t
+                JOIN Trips tr ON t.trip_id = tr.id
+                WHERE t.id = :ticket_id AND tr.company_id = :company_id AND t.status = 'active'
+            ");
+            $stmt->execute([':ticket_id' => $ticket_id, ':company_id' => $this->company_id]);
+            $ticket = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$ticket) {
+                throw new Exception("Geçersiz, zaten iptal edilmiş veya firmanıza ait olmayan bir bilet.");
+            }
+            
+            $user_id_to_refund = $ticket['user_id'];
+            $refund_amount = $ticket['total_price'];
+
+
+            $update_ticket_stmt = $this->pdo->prepare("UPDATE Tickets SET status = 'canceled' WHERE id = ?");
+            $update_ticket_stmt->execute([$ticket_id]);
+
+
+            $refund_stmt = $this->pdo->prepare("UPDATE User SET balance = balance + ? WHERE id = ?");
+            $refund_stmt->execute([$refund_amount, $user_id_to_refund]);
+
+
+
+            $this->pdo->commit();
+            $_SESSION['flash_message'] = "Bilet başarıyla iptal edildi ve ücreti kullanıcıya iade edildi.";
+            $_SESSION['flash_type'] = 'success';
+
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            $_SESSION['flash_message'] = "İptal sırasında bir hata oluştu: " . $e->getMessage();
+            $_SESSION['flash_type'] = 'danger';
+        }
+    }
+
+
     protected function loadView($viewName, $data = []) {
         extract($data);
         require __DIR__ . '/../views/pages/' . $viewName . '.php';
