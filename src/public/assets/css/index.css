@@ -1,4 +1,4 @@
-.backgroun-image
+.background-image
 {
     background-image: url('../images/bus.jpg');
     background-size: cover;
@@ -76,7 +76,7 @@
 
 .form-field .form-control {
     border: none;
-    padding: 1.8rem 1rem 1.8rem 50px; /* İkon için solda boşluk */
+    padding: 1.8rem 1rem 1.8rem 50px; 
     font-size: 1rem;
     background-color: transparent !important;
 }
@@ -107,4 +107,15 @@
 .route-card .card-title {
     color: #343a40;
     font-weight: 500;
+}
+
+.popular-journeys{
+    background-color: #343a40;
+    padding-bottom: 3rem;
+    margin-bottom: 4rem;
+    padding-top: 1rem;
+}
+
+.pop-routes{
+    color: white;
 }

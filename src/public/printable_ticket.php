@@ -1,8 +1,8 @@
 <?php
 session_start();
-require_once __DIR__ . '/../app/config.php';
+require_once __DIR__ . '/../app/config/config.php';
 
-// --- GÜVENLİK GÖREVLİSİ (GUARD) ---
+
 if (!isset($_SESSION['user_id']) || !isset($_GET['ticket_id'])) {
     header("Location: login.php");
     exit();
