@@ -1,7 +1,5 @@
 <?php
-// src/app/controllers/admin/AdminUserController.php
 
-// Gerekli dosyalar (config ve session giriş noktasında çağrılacak)
 
 class AdminUserController {
     private $pdo;
@@ -10,11 +8,9 @@ class AdminUserController {
         $this->pdo = $pdo;
     }
 
-    /**
-     * Kullanıcı yönetimi sayfasını gösterir ve POST isteklerini işler.
-     */
+  
     public function showUsersPage() {
-        // --- GÜVENLİK GÖREVLİSİ (GUARD) ---
+   
         if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
             die("Bu sayfaya erişim yetkiniz bulunmamaktadır.");
         }
@@ -24,8 +20,7 @@ class AdminUserController {
         $flash_type = $_SESSION['flash_type'] ?? 'success';
         unset($_SESSION['flash_message'], $_SESSION['flash_type']);
 
-        
-        // --- POST İŞLEMLERİ ---
+      
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!isset($_POST['csrf_token']) || !verify_csrf_token($_POST['csrf_token'])) { die("Geçersiz CSRF token!"); }
 
@@ -41,22 +36,21 @@ class AdminUserController {
             exit();
         }
 
-        // --- VERİLERİ ÇEKME (View için) ---
         try {
-            // GÜNCELLEME: Firma Yetkilileri (company rolü) için 'u.balance' eklendi
+           
             $company_users = $this->pdo->query("
                 SELECT u.id, u.full_name, u.email, u.company_id, u.balance, bc.name as company_name 
                 FROM User u LEFT JOIN Bus_Company bc ON u.company_id = bc.id
                 WHERE u.role = 'company' ORDER BY u.full_name ASC
             ")->fetchAll(PDO::FETCH_ASSOC);
 
-            // GÜNCELLEME: Normal Kullanıcılar (user rolü) için 'balance' zaten vardı, teyit edildi.
+     
             $regular_users = $this->pdo->query(
                 "SELECT id, full_name, email, balance 
                  FROM User WHERE role = 'user' ORDER BY full_name ASC"
             )->fetchAll(PDO::FETCH_ASSOC);
 
-            // Firma listesi (Dropdown'lar için)
+         
             $companies = $this->pdo->query("SELECT id, name FROM Bus_Company ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
 
         } catch (PDOException $e) {
@@ -69,7 +63,7 @@ class AdminUserController {
         }
 
     
-        // View'a gönderilecek veriler
+    
         $data = [
             'company_users' => $company_users,
             'regular_users' => $regular_users,
@@ -102,7 +96,7 @@ class AdminUserController {
                     $_SESSION['flash_type'] = "danger";
                 } else {
                     $hashed_password = password_hash($password, PASSWORD_ARGON2ID);
-                    // Not: Yeni firma yetkilisi varsayılan bakiye ile başlar (DB'de 800 olarak ayarlı)
+                 
                     $stmt = $this->pdo->prepare("INSERT INTO User (id, full_name, email, password, role, company_id, created_at) VALUES (?, ?, ?, ?, 'company', ?, ?)");
                     $stmt->execute([bin2hex(random_bytes(16)), $full_name, $email, $hashed_password, $company_id, date('Y-m-d H:i:s')]);
                     $_SESSION['flash_message'] = "Firma yetkilisi başarıyla eklendi.";
@@ -115,9 +109,7 @@ class AdminUserController {
         }
     }
 
-    /**
-     * GÜNCELLEME: Kullanıcı (user veya company) düzenleme isteğini işler (Bakiye eklendi)
-     */
+ 
     private function handleEditUser() {
         $user_id = $_POST['user_id'];
         $full_name = trim($_POST['full_name']);
@@ -126,16 +118,15 @@ class AdminUserController {
         $company_id = ($role === 'company' && isset($_POST['company_id'])) ? $_POST['company_id'] : null;
         $new_password = $_POST['new_password'];
         
-        // GÜNCELLEME: Bakiye verisini al ve doğrula
+        
         $balance = filter_input(INPUT_POST, 'balance', FILTER_VALIDATE_FLOAT);
 
-        // Doğrulama
         if (empty($full_name) || !filter_var($email, FILTER_VALIDATE_EMAIL) || !in_array($role, ['user', 'company', 'admin'])) {
              $_SESSION['flash_message'] = "Lütfen Ad Soyad, E-posta ve Rol alanlarını doğru doldurun.";
              $_SESSION['flash_type'] = "danger";
              return;
         }
-        if ($balance === false || $balance < 0) { // Bakiye false veya negatif olamaz
+        if ($balance === false || $balance < 0) {
              $_SESSION['flash_message'] = "Lütfen geçerli bir bakiye (0 veya daha büyük) girin.";
              $_SESSION['flash_type'] = "danger";
              return;
@@ -148,20 +139,20 @@ class AdminUserController {
 
 
         try {
-            // E-posta benzersizlik kontrolü (kendisi hariç)
+            
             $check_stmt = $this->pdo->prepare("SELECT id FROM User WHERE email = ? AND id != ?");
             $check_stmt->execute([$email, $user_id]);
             if ($check_stmt->fetch()) {
                 $_SESSION['flash_message'] = "Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor.";
                 $_SESSION['flash_type'] = "danger";
             } else {
-                // GÜNCELLEME: Temel bilgileri güncelle (Bakiye eklendi)
+               
                 $sql = "UPDATE User SET full_name = ?, email = ?, company_id = ?, role = ?, balance = ? WHERE id = ?";
                 $stmt = $this->pdo->prepare($sql);
                 $stmt->execute([$full_name, $email, $company_id, $role, $balance, $user_id]);
                 $updated = true;
 
-                // Yeni şifre varsa güncelle
+             
                 if (!empty($new_password)) {
                     if (strlen($new_password) >= 8) {
                         $hashed_password = password_hash($new_password, PASSWORD_ARGON2ID);
@@ -185,13 +176,11 @@ class AdminUserController {
          }
     }
 
-    /**
-     * Kullanıcı silme isteğini işler.
-     */
+    
     private function handleDeleteUser() {
         $user_id = $_POST['user_id'];
         try {
-            // Admin rolündeki kullanıcıların silinmesini engelle
+           
             $stmt = $this->pdo->prepare("DELETE FROM User WHERE id = ? AND role != 'admin'");
             $deleted = $stmt->execute([$user_id]);
 
@@ -205,7 +194,7 @@ class AdminUserController {
             }
         } catch (PDOException $e) {
             error_log("Kullanıcı silme hatası: " . $e->getMessage());
-             // İlişkisel veri hatası (örn: kullanıcının bileti varsa)
+            
             if ($e->getCode() == 23000) {
                 $_SESSION['flash_message'] = "Hata: Bu kullanıcıya ait biletler veya başka ilişkili veriler bulunduğu için silinemez.";
             } else {
@@ -215,9 +204,7 @@ class AdminUserController {
         }
     }
 
-    /**
-     * Belirtilen view dosyasını yükler ve verileri ona aktarır.
-     */
+  
     protected function loadView($viewName, $data = []) {
         extract($data);
         require __DIR__ . '/../../views/pages/' . $viewName . '.php';

@@ -51,25 +51,13 @@ Platform 3 ana kullanıcı rolünü destekler:
 
 ---
 
-##  Sayfa ve Yetki Mimarisi
 
-> **Not:** Bu bölüme mimari diyagram eklenebilir.  
-> Örnek kullanım:
-> ```markdown
-> ![Sayfa ve Yetki Mimarisi](docs/system-architecture.png)
-> ```
 
----
-
-## Docker Komutları
-
-```bash
-# Build işlemi
 docker build -t ticketbuy .
 
-# Container başlatma
+
 docker run -d -p 8080:80 --name ticketbuy ticketbuy
 
-# veya compose ile
+
 docker-compose up --build
 

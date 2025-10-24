@@ -120,16 +120,10 @@ class AuthController {
         $this->loadView('login', $data);
     }
 
-    /**
-     * Belirtilen view dosyasını yükler ve verileri ona aktarır.
-     * DİKKAT: Bu fonksiyonun çalışması için views klasörünün olması gerekir.
-     * Eğer views klasörü yoksa, bu fonksiyon yerine doğrudan require kullanmalısın.
-     * @param string $viewName app/views/pages klasörü içindeki dosya adı (uzantısız)
-     * @param array $data View içinde kullanılacak değişkenler ['degisken_adi' => deger]
-     */
+ 
     protected function loadView($viewName, $data = []) {
         extract($data);
-        // DÜZELTME: Senin yapında views klasörü app altında görünüyor.
+
         require __DIR__ . '/../views/pages/' . $viewName . '.php';
     }
 }
