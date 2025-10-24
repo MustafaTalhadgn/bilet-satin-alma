@@ -262,7 +262,7 @@ class AdminCompanyController {
 
        
         if (move_uploaded_file($file["tmp_name"], $target_file_absolute)) {
-            return [true, $target_file_relative]; // Başarılı, BAŞINDA / OLMADAN yolu döndür
+            return [true, $target_file_relative]; 
         } else {
             error_log("move_uploaded_file hatası: " . print_r(error_get_last(), true));
             return [false, "Dosya yüklenirken sunucu hatası oluştu."];

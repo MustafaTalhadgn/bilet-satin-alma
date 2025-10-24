@@ -11,7 +11,7 @@ if (!isset($_SESSION['user_id']) || !isset($_GET['ticket_id'])) {
 $user_id = $_SESSION['user_id'];
 $ticket_id = $_GET['ticket_id'];
 
-// --- BİLET BİLGİLERİNİ ÇEKME (IDOR KORUMALI) ---
+
 try {
     $stmt = $pdo->prepare("
         SELECT
@@ -74,7 +74,7 @@ try {
             margin-top: 20px;
         }
 
-        /* YAZDIRMA STİLLERİ: Yazdırma sırasında gereksiz alanları gizler */
+     
         @media print {
             body {
                 background-color: #fff;

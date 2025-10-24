@@ -131,7 +131,7 @@ require_once __DIR__ . '/../../partials/header.php';
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
                     <div class="mb-3"><label class="form-label">Ad Soyad</label><input type="text" name="full_name" class="form-control" required></div>
                     <div class="mb-3"><label class="form-label">E-posta</label><input type="email" name="email" class="form-control" required></div>
-                    <div class="mb-3"><label class="form-label">Şifre (En az 8 karakter)</label><input type="password" name="password" class="form-control" required></div>
+                    <div class="mb-3"><label class="form-label">Şifre (En az 8 karakter)</label><input type="text" name="password" class="form-control" required></div>
                     <div class="mb-3"><label class="form-label">Atanacak Firma</label>
                         <select name="company_id" class="form-select" required>
                             <option value="" disabled selected>Firma Seçin...</option>
@@ -176,7 +176,7 @@ require_once __DIR__ . '/../../partials/header.php';
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    <div class="mb-3"><label class="form-label">Yeni Şifre (Değiştirmek istemiyorsanız boş bırakın)</label><input type="password" name="new_password" class="form-control"></div>
+                    <div class="mb-3"><label class="form-label">Yeni Şifre (Değiştirmek istemiyorsanız boş bırakın)</label> <input type="password" name="new_password" class="form-control" autocomplete="new-password"></div>
                     <div class="modal-footer"><button type="submit" name="edit_user" class="btn btn-dark">Değişiklikleri Kaydet</button></div>
                 </form>
             </div>

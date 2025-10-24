@@ -12,7 +12,7 @@ class CompanyAdminController {
 
 
     private function initialize() {
-        // --- GÜVENLİK GÖREVLİSİ (GUARD) ---
+       
         if (!isset($_SESSION['user_id'])) {
             header("Location: /login.php");
             exit();
@@ -22,7 +22,7 @@ class CompanyAdminController {
         }
         
 
-        // --- FİRMA ID'SİNİ ALMA ---
+       
         $company_admin_id = $_SESSION['user_id'];
         $stmt = $this->pdo->prepare("SELECT company_id FROM User WHERE id = :id");
         $stmt->execute([':id' => $company_admin_id]);
@@ -35,13 +35,12 @@ class CompanyAdminController {
 
 
     public function showDashboard() {
-        // Flash mesajları ve CSRF token'ı session.php'den al
+     
         global $csrf_token;
         $flash_message = $_SESSION['flash_message'] ?? null;
         $flash_type = $_SESSION['flash_type'] ?? 'success';
         unset($_SESSION['flash_message'], $_SESSION['flash_type']);
 
-        // --- POST İŞLEMLERİ ---
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!isset($_POST['csrf_token']) || !verify_csrf_token($_POST['csrf_token'])) {
                 die("Geçersiz CSRF token!");
@@ -60,29 +59,28 @@ class CompanyAdminController {
             } elseif (isset($_POST['delete_coupon'])) {
                 $this->handleDeleteCoupon();
             }
-            // İşlem sonrası sayfayı yeniden yönlendir (PRG Pattern)
-            header("Location: /companyAdmin.php"); // Kök dizine göre
+          
+            header("Location: /companyAdmin.php"); 
             exit();
         }
 
-        // --- VERİLERİ ÇEKME (View için) ---
-        try {
-            // Firmaya ait seferler
+         try {
+           
             $company_trips_stmt = $this->pdo->prepare("SELECT * FROM Trips WHERE company_id = ? ORDER BY departure_time DESC");
             $company_trips_stmt->execute([$this->company_id]);
             $company_trips = $company_trips_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            // Firmaya ait kuponlar
+            
             $company_coupons_stmt = $this->pdo->prepare("SELECT * FROM Coupons WHERE company_id = ? ORDER BY created_at DESC");
             $company_coupons_stmt->execute([$this->company_id]);
             $company_coupons = $company_coupons_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            // Şehir listesi (JSON dosyasından - yolu düzelt)
-            $cities_json = file_get_contents(__DIR__ . '/../data/city.json'); // Controller'a göre yol
+           
+            $cities_json = file_get_contents(__DIR__ . '/../data/city.json');
             $cities = json_decode($cities_json);
             if ($cities === null) { throw new Exception("Şehir listesi okunamadı veya JSON formatı bozuk."); }
 
-        } catch (Exception $e) { // PDOException veya genel Exception yakala
+        } catch (Exception $e) {
             error_log("Firma paneli verileri çekilemedi: " . $e->getMessage());
             $company_trips = [];
             $company_coupons = [];
@@ -92,7 +90,7 @@ class CompanyAdminController {
         }
 
 
-        // View'a gönderilecek veriler
+     
         $data = [
             'company_trips' => $company_trips,
             'company_coupons' => $company_coupons,
@@ -102,7 +100,7 @@ class CompanyAdminController {
             'csrf_token' => $csrf_token
         ];
 
-        // İlgili view dosyasını yükle
+       
         $this->loadView('company/dashboard', $data);
     }
 
@@ -115,19 +113,27 @@ class CompanyAdminController {
         $price = filter_input(INPUT_POST, 'price', FILTER_VALIDATE_FLOAT);
         $capacity = filter_input(INPUT_POST, 'capacity', FILTER_VALIDATE_INT);
 
+        $departure_timestamp = strtotime($departure_time);
+        $arrival_timestamp = strtotime($arrival_time);
+
         if ($price === false || $capacity === false || $price <= 0 || $capacity <= 0 || empty($departure_city) || empty($destination_city) || empty($departure_time) || empty($arrival_time)) {
              $_SESSION['flash_message'] = "Hata: Tüm sefer alanları doğru şekilde doldurulmalıdır.";
              $_SESSION['flash_type'] = "danger";
              return;
         }
-
+         if ($arrival_timestamp <= $departure_timestamp) {
+             $_SESSION['flash_message'] = "Hata: Varış zamanı, kalkış zamanından daha önce veya aynı olamaz.";
+             $_SESSION['flash_type'] = "danger";
+             return; 
+        }
+        
         try {
             $sql = "INSERT INTO Trips (id, company_id, departure_city, destination_city, departure_time, arrival_time, price, capacity, created_date)
                     VALUES (:id, :company_id, :departure_city, :destination_city, :departure_time, :arrival_time, :price, :capacity, :created_date)";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
                 ':id' => bin2hex(random_bytes(16)),
-                ':company_id' => $this->company_id, // Sadece kendi firmasına ekleyebilir
+                ':company_id' => $this->company_id,
                 ':departure_city' => $departure_city,
                 ':destination_city' => $destination_city,
                 ':departure_time' => date('Y-m-d H:i:s', strtotime($departure_time)),
@@ -161,7 +167,7 @@ class CompanyAdminController {
         }
 
         try {
-            // IDOR Koruması: Sadece kendi firmasına ait seferi güncelleyebilsin
+           
             $sql = "UPDATE Trips SET departure_city=:departure_city, destination_city=:destination_city,
                     departure_time=:departure_time, arrival_time=:arrival_time, price=:price, capacity=:capacity
                     WHERE id = :id AND company_id = :company_id";
@@ -174,7 +180,7 @@ class CompanyAdminController {
                 ':price' => $price,
                 ':capacity' => $capacity,
                 ':id' => $trip_id,
-                ':company_id' => $this->company_id // En önemli güvenlik kontrolü
+                ':company_id' => $this->company_id 
             ]);
              if ($stmt->rowCount() > 0) {
                  $_SESSION['flash_message'] = "Sefer başarıyla güncellendi.";
@@ -195,9 +201,7 @@ class CompanyAdminController {
         if (empty($trip_id_to_delete)) return;
 
          try {
-             // IDOR Koruması: Sadece kendi firmasına ait seferi silebilsin
-             // Önce ilişkili bilet/koltuk var mı diye bakmak daha güvenli olabilir
-             // ama şimdilik direkt silelim.
+           
             $sql = "DELETE FROM Trips WHERE id = :id AND company_id = :company_id";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([':id' => $trip_id_to_delete, ':company_id' => $this->company_id]);
@@ -210,7 +214,7 @@ class CompanyAdminController {
              }
         } catch (PDOException $e) {
              error_log("Sefer silme hatası: " . $e->getMessage());
-             // İlişkisel veri hatası olabilir (bu sefere ait bilet varsa)
+            
              if ($e->getCode() == 23000) {
                   $_SESSION['flash_message'] = "Hata: Bu sefere ait biletler bulunduğu için sefer silinemez.";
              } else {
@@ -232,13 +236,13 @@ class CompanyAdminController {
             $_SESSION['flash_type'] = "danger";
         } else {
             try {
-                // company_id'yi bu firma yetkilisinin ID'si olarak ekle
+             
                 $sql = "INSERT INTO Coupons (id, code, discount, usage_limit, expire_date, created_at, company_id)
                         VALUES (?, ?, ?, ?, ?, ?, ?)";
                 $stmt = $this->pdo->prepare($sql);
                 $stmt->execute([
                     bin2hex(random_bytes(16)), $code, $discount, $usage_limit,
-                    date('Y-m-d H:i:s', strtotime($expire_date)), // Tarih formatını düzeltelim
+                    date('Y-m-d H:i:s', strtotime($expire_date)), 
                     date('Y-m-d H:i:s'), $this->company_id
                 ]);
                 $_SESSION['flash_message'] = "Kupon başarıyla oluşturuldu.";
@@ -256,7 +260,7 @@ class CompanyAdminController {
         if (empty($coupon_id_to_delete)) return;
 
         try {
-            // IDOR Koruması: Sadece kendi firmasına ait kuponu silebilsin
+       
             $sql = "DELETE FROM Coupons WHERE id = :id AND company_id = :company_id";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([':id' => $coupon_id_to_delete, ':company_id' => $this->company_id]);
@@ -283,14 +287,14 @@ class CompanyAdminController {
         $usage_limit = filter_input(INPUT_POST, 'usage_limit', FILTER_VALIDATE_INT);
         $expire_date = trim($_POST['expire_date']);
 
-        if ($discount === false || $usage_limit === false || empty($expire_date) || $discount <= 0 || $usage_limit < 0) { // Limit 0 olabilir
+        if ($discount === false || $usage_limit === false || empty($expire_date) || $discount <= 0 || $usage_limit < 0) {  
              $_SESSION['flash_message'] = "Hata: İndirim oranı, kullanım limiti ve tarih alanları doğru doldurulmalıdır.";
              $_SESSION['flash_type'] = "danger";
              return;
         }
 
         try {
-            // IDOR Koruması: Sadece kendi firmasına ait kuponu güncelleyebilsin
+            
             $sql = "UPDATE Coupons SET discount = ?, usage_limit = ?, expire_date = ? 
                     WHERE id = ? AND company_id = ?";
             $stmt = $this->pdo->prepare($sql);
@@ -309,28 +313,25 @@ class CompanyAdminController {
         }
     }
     
- public function showTicketsPage() {
+    public function showTicketsPage() {
         global $csrf_token;
         $flash_message = $_SESSION['flash_message'] ?? null;
         $flash_type = $_SESSION['flash_type'] ?? 'success';
         unset($_SESSION['flash_message'], $_SESSION['flash_type']);
 
-
+      
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['admin_cancel_ticket'])) {
             if (!isset($_POST['csrf_token']) || !verify_csrf_token($_POST['csrf_token'])) {
                 die("Geçersiz işlem denemesi!");
             }
-            
             $this->handleAdminTicketCancel($_POST['ticket_id']);
-            
             session_write_close();
             header("Location: /company-tickets.php");
             exit();
         }
 
-
+        
         try {
-
             $stmt = $this->pdo->prepare("
                 SELECT
                     t.id AS ticket_id, t.status, t.total_price,
@@ -347,6 +348,33 @@ class CompanyAdminController {
             $stmt->execute([':company_id' => $this->company_id]);
             $company_tickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+          
+            $current_time = time();
+            foreach ($company_tickets as $key => $ticket) {
+                $status_text = 'Bilinmiyor';
+                $status_class = 'bg-secondary';
+                $departure_timestamp = strtotime($ticket['departure_time']);
+                $can_cancel = false; 
+
+                if ($ticket['status'] === 'canceled') {
+                    $status_text = 'İptal Edilmiş';
+                    $status_class = 'bg-danger';
+                } elseif ($departure_timestamp < $current_time) {
+                    $status_text = 'Tarihi Geçti';
+                    $status_class = 'bg-secondary';
+                } else {
+                    $status_text = 'Aktif';
+                    $status_class = 'bg-success';
+
+                    $can_cancel = true; 
+                }
+                
+                $company_tickets[$key]['display_status_text'] = $status_text;
+                $company_tickets[$key]['display_status_class'] = $status_class;
+                $company_tickets[$key]['can_cancel'] = $can_cancel;
+            }
+            
+
         } catch (PDOException $e) {
             error_log("Firma biletleri çekilemedi: " . $e->getMessage());
             $company_tickets = [];
@@ -354,10 +382,9 @@ class CompanyAdminController {
             $flash_type = "danger";
         }
 
-
         $data = [
             'pageTitle' => 'Bilet Yönetimi',
-            'activePage' => 'company_tickets', 
+            'activePage' => 'company_tickets',
             'company_tickets' => $company_tickets,
             'flash_message' => $flash_message,
             'flash_type' => $flash_type,

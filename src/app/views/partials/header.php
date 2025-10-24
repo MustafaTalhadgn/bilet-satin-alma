@@ -40,7 +40,9 @@
                                 <?php echo htmlspecialchars($_SESSION['user_fullname']); ?>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <?php if ($_SESSION['user_role'] !== 'admin'): ?>
                                 <li><a class="dropdown-item <?php echo ($activePage === 'my-account') ? 'active' : ''; ?>" href="/account.php">Hesabım</a></li>
+                                <?php endif; ?>
                                 
                                 <?php 
                                 if ($_SESSION['user_role'] === 'user'): ?>

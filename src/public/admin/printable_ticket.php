@@ -99,7 +99,7 @@ try {
         </div>
         <div class="col-8 text-end">
             <h3 class="mb-0"><?php echo htmlspecialchars($ticket_data['company_name']); ?></h3>
-            <p class="mb-0 text-muted">Yolcu Bileti (Yönetici Kopyası)</p>
+            <p class="mb-0 text-muted">Yolcu Bileti </p>
         </div>
     </div>
 
