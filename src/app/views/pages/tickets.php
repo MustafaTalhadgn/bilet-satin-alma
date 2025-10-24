@@ -1,10 +1,3 @@
-<?php
-/**
- * src/app/views/pages/my-tickets.php
- * Kullanıcının biletlerini listeleyen HTML yapısı.
- * Gerekli değişkenler ($active_tickets, $csrf_token vb.) TicketController tarafından sağlanır.
- */
-?>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -16,12 +9,14 @@
     <link rel="stylesheet" href="/assets/css/header.css">
     <link rel="stylesheet" href="/assets/css/my-tickets.css">
     <link rel="stylesheet" href="/assets/css/style.css"> 
+    <link rel="stylesheet" href="/assets/css/footer.css"> 
+
 
 </head>
 <body>
 
 <?php
-// Partial'ı doğru yerden çağır
+
 require_once __DIR__ . '/../partials/header.php';
 ?>
 
@@ -179,7 +174,6 @@ require_once __DIR__ . '/../partials/header.php';
 </main>
 
 <?php
-// Partial'ı doğru yerden çağır
 require_once __DIR__ . '/../partials/footer.php';
 ?>
 

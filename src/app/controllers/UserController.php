@@ -1,7 +1,6 @@
 <?php
-// src/app/controllers/UserController.php
 
-// Gerekli dosyalar (config ve session giriş noktasında çağrılacak)
+
 
 class UserController {
     private $pdo;
@@ -10,32 +9,36 @@ class UserController {
         $this->pdo = $pdo;
     }
 
-    /**
-     * Kullanıcının hesap sayfasını gösterir ve güncellemeleri işler.
-     */
+
     public function showAccountPage() {
-        // --- GÜVENLİK GÖREVLİSİ (GUARD) ---
+
         if (!isset($_SESSION['user_id'])) {
-            header("Location: /login.php"); // Kök dizine göre
+            header("Location: /login.php"); 
             exit();
         }
 
+        if ($_SESSION['user_role'] === 'admin') {
+            session_write_close();
+            header("Location: /admin/index.php"); 
+            exit();
+        }
+        
+
         $user_id = $_SESSION['user_id'];
 
-        // Flash mesajları ve CSRF token'ı session.php'den alıyoruz
+
         global $csrf_token;
         $flash_message = $_SESSION['flash_message'] ?? null;
         $flash_type = $_SESSION['flash_type'] ?? 'success';
         unset($_SESSION['flash_message'], $_SESSION['flash_type']);
 
-        // --- FORM GÖNDERİM İŞLEMLERİ (POST REQUEST) ---
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // CSRF Token Kontrolü
+
             if (!isset($_POST['csrf_token']) || !verify_csrf_token($_POST['csrf_token'])) {
                 die("Geçersiz işlem denemesi!");
             }
 
-            // --- PROFİL BİLGİLERİNİ GÜNCELLEME ---
+
             if (isset($_POST['update_profile'])) {
                 $full_name = trim($_POST['full_name']);
 
@@ -43,18 +46,17 @@ class UserController {
                     $stmt = $this->pdo->prepare("UPDATE User SET full_name = :full_name WHERE id = :user_id");
                     $stmt->execute([':full_name' => $full_name, ':user_id' => $user_id]);
 
-                    $_SESSION['user_fullname'] = $full_name; // Session'ı da güncelle
+                    $_SESSION['user_fullname'] = $full_name; 
                     $_SESSION['flash_message'] = "Profil bilgileriniz başarıyla güncellendi.";
                     $_SESSION['flash_type'] = 'success';
                 } else {
                     $_SESSION['flash_message'] = "Ad Soyad alanı boş bırakılamaz.";
                     $_SESSION['flash_type'] = 'danger';
                 }
-                header("Location: /my-account.php"); // Kök dizine göre
+                header("Location: /my-account.php"); 
                 exit();
             }
 
-            // --- ŞİFRE DEĞİŞTİRME ---
             if (isset($_POST['change_password'])) {
                 $current_password = $_POST['current_password'];
                 $new_password = $_POST['new_password'];
@@ -86,30 +88,28 @@ class UserController {
                     $_SESSION['flash_message'] = "Hata: " . $e->getMessage();
                     $_SESSION['flash_type'] = 'danger';
                 }
-                header("Location: /my-account.php"); // Kök dizine göre
+                header("Location: /my-account.php"); 
                 exit();
             }
         }
 
-        // --- GÜNCEL KULLANICI BİLGİLERİNİ ÇEKME (View için) ---
         try {
             $stmt = $this->pdo->prepare("SELECT full_name, email, balance FROM User WHERE id = :user_id");
             $stmt->execute([':user_id' => $user_id]);
             $current_user = $stmt->fetch(PDO::FETCH_ASSOC);
              if (!$current_user) {
-                 // Kullanıcı bulunamazsa (çok olası değil ama kontrol edelim)
+
                  session_destroy();
                  header("Location: /login.php");
                  exit();
              }
         } catch (PDOException $e) {
              error_log("Kullanıcı bilgileri çekilemedi: " . $e->getMessage());
-             // Hata durumunda kullanıcıya bilgi verip çıkış yaptırabiliriz.
+
              die("Hesap bilgileri yüklenirken bir sorun oluştu.");
         }
 
 
-        // View'a gönderilecek veriler
         $data = [
             'current_user' => $current_user,
             'flash_message' => $flash_message,
@@ -117,14 +117,12 @@ class UserController {
             'csrf_token' => $csrf_token
         ];
 
-        // İlgili view dosyasını yükle
+
         $this->loadView('account', $data);
     }
 
 
-    /**
-     * Belirtilen view dosyasını yükler ve verileri ona aktarır.
-     */
+
     protected function loadView($viewName, $data = []) {
         extract($data);
         require __DIR__ . '/../views/pages/' . $viewName . '.php';

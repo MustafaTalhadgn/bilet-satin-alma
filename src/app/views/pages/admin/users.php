@@ -1,9 +1,4 @@
-<?php
-/**
- * src/app/views/pages/admin/users.php
- * Kullanıcı yönetimi sayfasının HTML yapısı.
- */
-?>
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -15,25 +10,27 @@
     <link rel="stylesheet" href="/assets/css/header.css">
     <link rel="stylesheet" href="/assets/css/admin.css">
     <link rel="stylesheet" href="/assets/css/style.css"> 
+    <link rel="stylesheet" href="/assets/css/footer.css">
+    <link rel="stylesheet" href="/assets/css/admin-user.css">
 
 </head>
 <body>
 <?php
-// Partial'ı doğru yerden çağır (app/views/partials/)
+
 require_once __DIR__ . '/../../partials/header.php';
 ?>
 <main class="container my-5">
     <div class="row">
         <div class="col-md-3">
             <?php
-            // Admin sidebar'ını doğru yerden çağır
+       
             require_once __DIR__ . '/../../partials/sidebar_admin.php';
             ?>
         </div>
         <div class="col-md-9">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1>Kullanıcı Yönetimi</h1>
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUserModal"><i class="bi bi-person-plus-fill"></i> Yeni Firma Yetkilisi Ekle</button>
+                <button class="btn btn-first" data-bs-toggle="modal" data-bs-target="#addUserModal"><i class="bi bi-person-plus-fill"></i> Yeni Firma Yetkilisi Ekle</button>
             </div>
 
             <?php if ($flash_message): ?>
@@ -67,9 +64,9 @@ require_once __DIR__ . '/../../partials/header.php';
                                     <td><?php echo htmlspecialchars($user['full_name']); ?></td>
                                     <td><?php echo htmlspecialchars($user['email']); ?></td>
                                     <td><?php echo htmlspecialchars(number_format($user['balance'], 2, ',', '.')); ?> TL</td>
-                                    <td><span class="badge bg-secondary"><?php echo htmlspecialchars($user['company_name'] ?? 'Atanmamış'); ?></span></td>
+                                    <td><span class="text-dark"><?php echo htmlspecialchars($user['company_name'] ?? 'Atanmamış'); ?></span></td>
                                     <td>
-                                        <button class="btn btn-primary btn-sm edit-user-btn" data-bs-toggle="modal" data-bs-target="#editUserModal"
+                                        <button class="btn btn-secondary btn-sm edit-user-btn" data-bs-toggle="modal" data-bs-target="#editUserModal"
                                                 data-id="<?php echo $user['id']; ?>" data-name="<?php echo htmlspecialchars($user['full_name']); ?>"
                                                 data-email="<?php echo htmlspecialchars($user['email']); ?>" data-role="company"
                                                 data-company-id="<?php echo $user['company_id']; ?>"
@@ -103,7 +100,7 @@ require_once __DIR__ . '/../../partials/header.php';
                                     <td><?php echo htmlspecialchars($user['email']); ?></td>
                                     <td><?php echo htmlspecialchars(number_format($user['balance'], 2, ',', '.')); ?> TL</td>
                                     <td>
-                                        <button class="btn btn-primary btn-sm edit-user-btn" data-bs-toggle="modal" data-bs-target="#editUserModal"
+                                        <button class="btn btn-secondary btn-sm edit-user-btn" data-bs-toggle="modal" data-bs-target="#editUserModal"
                                                 data-id="<?php echo $user['id']; ?>" data-name="<?php echo htmlspecialchars($user['full_name'] ?? ''); ?>"
                                                 data-email="<?php echo htmlspecialchars($user['email']); ?>" data-role="user" data-company-id=""
                                                 data-balance="<?php echo htmlspecialchars($user['balance']); ?>"> Düzenle
@@ -143,7 +140,7 @@ require_once __DIR__ . '/../../partials/header.php';
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    <div class="modal-footer"><button type="submit" name="add_user" class="btn btn-success">Kaydet</button></div>
+                    <div class="modal-footer"><button type="submit" name="add_user" class="btn btn-dark">Kaydet</button></div>
                 </form>
             </div>
         </div>
@@ -180,7 +177,7 @@ require_once __DIR__ . '/../../partials/header.php';
                         </select>
                     </div>
                     <div class="mb-3"><label class="form-label">Yeni Şifre (Değiştirmek istemiyorsanız boş bırakın)</label><input type="password" name="new_password" class="form-control"></div>
-                    <div class="modal-footer"><button type="submit" name="edit_user" class="btn btn-primary">Değişiklikleri Kaydet</button></div>
+                    <div class="modal-footer"><button type="submit" name="edit_user" class="btn btn-dark">Değişiklikleri Kaydet</button></div>
                 </form>
             </div>
         </div>

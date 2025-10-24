@@ -1,21 +1,16 @@
-<?php
-/**
- * src/app/views/pages/trips.php
- * Sefer arama sonuçlarının HTML yapısı.
- */
-?>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sefer Sonuçları</title>
-    <!-- CSS yolları web kökünden (/assets/) başlamalı -->
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/assets/css/header.css">
     <link rel="stylesheet" href="/assets/css/trips.css">
     <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/footer.css">
 </head>
 <body>
 
@@ -37,8 +32,8 @@
             <div class="card text-center mb-4 trip-card">
                 <div class="card-header">
                     <ul class="nav nav-tabs card-header-tabs">
-                        <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#details-<?php echo $trip['id']; ?>">Sefer Detayları</a></li>
-                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#seats-<?php echo $trip['id']; ?>">Koltuklar</a></li>
+                        <li class="nav-item "><a class="nav-link active" data-bs-toggle="tab" href="#details-<?php echo $trip['id']; ?>">Sefer Detayları</a></li>
+                        <li class="nav-item "><a class="nav-link" data-bs-toggle="tab" href="#seats-<?php echo $trip['id']; ?>">Koltuklar</a></li>
                     </ul>
                 </div>
                 <div class="tab-content">
@@ -52,7 +47,7 @@
                                 </div>
                                 <div class="col-md-4 text-center"><span class="fw-bold"><?php echo htmlspecialchars($trip['departure_city']); ?></span> &rarr; <span class="fw-bold"><?php echo htmlspecialchars($trip['destination_city']); ?></span></div>
                                 <div class="col-md-2 fw-bold fs-4"><?php echo htmlspecialchars($trip['price']); ?> TL</div>
-                                <div class="col-md-2"><button class="btn btn-primary w-100 select-seat-btn" data-bs-toggle="tab" data-bs-target="#seats-<?php echo $trip['id']; ?>">Koltuk Seç</button></div>
+                                <div class="col-md-2"><button class="btn btn-secondary w-100 select-seat-btn" data-bs-toggle="tab" data-bs-target="#seats-<?php echo $trip['id']; ?>">Koltuk Seç</button></div>
                             </div>
                         </div>
                     </div>
@@ -81,28 +76,28 @@
                                         <p>Seçilen Koltuk: <strong class="selected-seat-number"></strong></p>
                                         <p>Toplam Tutar: <strong class="total-price"><?php echo htmlspecialchars($trip['price']); ?> TL</strong></p>
                                         <?php
-                                            // Rol bazlı buton mantığı
-                                            $form_action = '/login.php'; // Varsayılan: Giriş yapmamışsa login'e
+                                    
+                                            $form_action = '/login.php'; 
                                             $button_text = 'Ödemeye Geç';
                                             $button_class = 'btn-success';
                                             $button_attributes = '';
 
                                             if (isset($_SESSION['user_id']) && isset($_SESSION['user_role'])) {
                                                 if ($_SESSION['user_role'] === 'user') {
-                                                    $form_action = '/pay.php'; // Rol user ise pay.php'ye
+                                                    $form_action = '/pay.php'; 
                                                 } else {
-                                                    $form_action = '#'; // Diğer roller bilet alamaz
+                                                    $form_action = '#'; 
                                                     $button_text = 'Yönetici Bilet Alamaz';
                                                     $button_class = 'btn-secondary';
                                                     $button_attributes = 'disabled';
                                                 }
                                             }
                                         ?>
-                                        <!-- ÖDEME FORMU - DİKKAT! -->
+                                        
                                         <form action="<?php echo $form_action; ?>" method="POST">
                                             <input type="hidden" name="trip_id" value="<?php echo $trip['id']; ?>">
                                             <input type="hidden" name="selected_seat" class="selected-seat-input" value="">
-                                            <!-- CSRF TOKEN EKLENDİ -->
+                                            
                                             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
                                             <button type="submit" class="btn <?php echo $button_class; ?> w-100" <?php echo $button_attributes; ?>>
                                                 <?php echo $button_text; ?>

@@ -1,11 +1,3 @@
-<?php
-/**
- * src/app/views/pages/company/dashboard.php
- * Firma yönetim panelinin HTML yapısı.
- * Controller'dan gelen $company_trips, $company_coupons, $cities,
- * $flash_message, $flash_type, ve $csrf_token değişkenlerini kullanır.
- */
-?>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -16,12 +8,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/assets/css/header.css">
     <link rel="stylesheet" href="/assets/css/style.css">
-   
+    <link rel="stylesheet" href="/assets/css/company-panel.css">
+    <link rel="stylesheet" href="/assets/css/footer.css">
 </head>
 <body>
 
 <?php
-// Partial'ı doğru yerden çağır (app/views/partials/)
+
 require_once __DIR__ . '/../../partials/header.php';
 ?>
 
@@ -35,22 +28,21 @@ require_once __DIR__ . '/../../partials/header.php';
     </div>
     <?php endif; ?>
 
-    <!-- SEKMELİ YAPI -->
     <ul class="nav nav-tabs mt-4" id="companyAdminTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="trips-tab" data-bs-toggle="tab" data-bs-target="#trips-panel" type="button" role="tab">Sefer Yönetimi</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="coupons-tab" data-bs-toggle="tab" data-bs-target="#coupons-panel" type="button" role="tab">Kupon Yönetimi</button>
+            <button class="nav-link " id="coupons-tab" data-bs-toggle="tab" data-bs-target="#coupons-panel" type="button" role="tab">Kupon Yönetimi</button>
         </li>
     </ul>
 
     <div class="tab-content pt-3" id="companyAdminTabContent">
-        <!-- SEFERLER SEKMESİ -->
+        
         <div class="tab-pane fade show active" id="trips-panel" role="tabpanel">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h4>Seferleriniz</h4>
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTripModal"><i class="bi bi-plus-circle"></i> Yeni Sefer Ekle</button>
+                <button class="btn btn-first" data-bs-toggle="modal" data-bs-target="#addTripModal"><i class="bi bi-plus-circle"></i> Yeni Sefer Ekle</button>
             </div>
              <?php if (empty($company_trips)): ?>
                 <div class="alert alert-info">Henüz firmanıza ait sefer bulunmamaktadır.</div>
@@ -69,7 +61,7 @@ require_once __DIR__ . '/../../partials/header.php';
                                     <td><?php echo htmlspecialchars($trip['price']); ?> TL</td>
                                     <td><?php echo htmlspecialchars($trip['capacity']); ?></td>
                                     <td>
-                                        <button class="btn btn-primary btn-sm edit-trip-btn" data-bs-toggle="modal" data-bs-target="#editTripModal"
+                                        <button class="btn btn-secondary btn-sm edit-trip-btn" data-bs-toggle="modal" data-bs-target="#editTripModal"
                                                 data-id="<?php echo $trip['id']; ?>"
                                                 data-from="<?php echo htmlspecialchars($trip['departure_city']); ?>"
                                                 data-to="<?php echo htmlspecialchars($trip['destination_city']); ?>"
@@ -91,7 +83,7 @@ require_once __DIR__ . '/../../partials/header.php';
             <?php endif; ?>
         </div>
 
-        <!-- KUPONLAR SEKMESİ (DÜZENLEME BUTONU EKLENDİ) -->
+ 
         <div class="tab-pane fade" id="coupons-panel" role="tabpanel">
              <div class="d-flex justify-content-between align-items-center mb-3">
                 <h4>Firmanızın Kuponları</h4>
@@ -113,8 +105,8 @@ require_once __DIR__ . '/../../partials/header.php';
                                     <td><?php echo htmlspecialchars($coupon['usage_limit']); ?></td>
                                     <td><?php echo date("d.m.Y", strtotime($coupon['expire_date'])); ?></td>
                                     <td>
-                                        <!-- DÜZENLEME BUTONU EKLENDİ -->
-                                        <button class="btn btn-primary btn-sm edit-coupon-btn"
+                                       
+                                        <button class="btn btn-secondary btn-sm edit-coupon-btn"
                                                 data-bs-toggle="modal" data-bs-target="#editCouponModal"
                                                 data-id="<?php echo $coupon['id']; ?>"
                                                 data-code="<?php echo htmlspecialchars($coupon['code']); ?>"
@@ -139,14 +131,14 @@ require_once __DIR__ . '/../../partials/header.php';
     </div>
 </main>
 
-<!-- Şehirler için Datalist (Modallarda kullanılacak) -->
+
 <datalist id="cityList">
     <?php foreach ($cities as $city): ?>
         <option value="<?php echo htmlspecialchars($city); ?>">
     <?php endforeach; ?>
 </datalist>
 
-<!-- YENİ SEFER EKLEME MODALI -->
+
 <div class="modal fade" id="addTripModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -172,7 +164,7 @@ require_once __DIR__ . '/../../partials/header.php';
     </div>
 </div>
 
-<!-- SEFER DÜZENLEME MODALI -->
+
 <div class="modal fade" id="editTripModal" tabindex="-1">
      <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -199,7 +191,7 @@ require_once __DIR__ . '/../../partials/header.php';
     </div>
 </div>
 
-<!-- YENİ KUPON EKLEME MODALI -->
+
 <div class="modal fade" id="addCouponModal" tabindex="-1">
      <div class="modal-dialog">
         <div class="modal-content">
@@ -220,7 +212,7 @@ require_once __DIR__ . '/../../partials/header.php';
     </div>
 </div>
 
-<!-- YENİ KUPON DÜZENLEME MODALI (YENİ EKLENDİ) -->
+
 <div class="modal fade" id="editCouponModal" tabindex="-1">
      <div class="modal-dialog">
         <div class="modal-content">
@@ -258,13 +250,12 @@ require_once __DIR__ . '/../../partials/header.php';
 
 
 <?php
-// Partial'ı doğru yerden çağır
+
 require_once __DIR__ . '/../../partials/footer.php';
 ?>
 
-<!-- JS yolları web kökünden (/assets/) başlamalı -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Firma paneline özel JS (Modalları doldurmak için) -->
+
 <script src="/assets/js/company-admin.js"></script>
 </body>
 </html>

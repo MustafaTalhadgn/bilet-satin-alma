@@ -51,7 +51,7 @@ Platform 3 ana kullanıcı rolünü destekler:
 
 ---
 
-## 🧱 Sayfa ve Yetki Mimarisi
+##  Sayfa ve Yetki Mimarisi
 
 > **Not:** Bu bölüme mimari diyagram eklenebilir.  
 > Örnek kullanım:
@@ -61,7 +61,7 @@ Platform 3 ana kullanıcı rolünü destekler:
 
 ---
 
-## 🐳 Docker Komutları
+## Docker Komutları
 
 ```bash
 # Build işlemi
@@ -73,11 +73,3 @@ docker run -d -p 8080:80 --name ticketbuy ticketbuy
 # veya compose ile
 docker-compose up --build
 
-🧭 Git Komutları
-İşlem	Komut
-Dosyaları ekleme	git add .
-Commit oluşturma	git commit -m "mesaj"
-Branch listeleme	git branch
-Branch oluşturma	git branch dev/login
-Branch değiştirme	git checkout dev/login
-Push etme	git push origin dev/login

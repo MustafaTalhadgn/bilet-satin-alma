@@ -1,0 +1,15 @@
+
+Options -Indexes
+
+<FilesMatch "(\.env|app\.db|config\.php|composer\.json|docker-compose\.yml)">
+  Require all denied
+</FilesMatch>
+
+RewriteEngine On
+
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+
+RewriteRule ^ /index.php [L]

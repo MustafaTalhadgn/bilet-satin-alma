@@ -1,0 +1,21 @@
+.nav-tabs .nav-link.active {
+    color: white;
+    background-color: #343a40;
+    border-color: #424A5E;
+
+}
+.nav-link{
+    color: black;
+}
+.nav-link.active{
+    color: white;
+}
+.nav-link:hover{
+transform: scale(1.1);
+color: black;
+}
+
+.select-seat-btn:hover{
+background-color: white;
+color: #343a40;
+}
